@@ -37,4 +37,19 @@ public class AdminSignInService {
         return adminDtos;
     }
 
+    public void addAdmin(AdminDto admin){
+         adminSignInRepository.save(new AdminEntity(
+                 admin.getId(),
+                 admin.getName(),
+                 admin.getDateOfBirth(),
+                 admin.getEmail(),
+                 admin.getPassword(),
+                 admin.getAddress(),
+                 admin.getPostalCode()
+         ));
+
+
+
+    }
+
 }
