@@ -27,11 +27,7 @@ public class AdminSignInController {
 
     @PostMapping("/addAdmin")
     public void addAdmin(AdminDto adminDto){
-
-
         adminSignInService.addAdmin(adminDto);
-
-
     }
 
 
