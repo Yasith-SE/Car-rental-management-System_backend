@@ -3,18 +3,23 @@ package edu.icet.service;
 import edu.icet.model.dto.AdminDto;
 import edu.icet.model.entity.AdminEntity;
 import edu.icet.repository.AdminSignInRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class AdminSignInService {
 
     @Autowired
-    AdminSignInRepository adminSignInRepository;
+    private AdminSignInRepository adminSignInRepository;
 
+    @Transactional(readOnly = true)
     public List<AdminDto> getAllAdmin(){
 
         List<AdminEntity> adminEntity = adminSignInRepository.findAll();
@@ -27,7 +32,7 @@ public class AdminSignInService {
                     entityAdmin.getName(),
                     entityAdmin.getDateOfBirth(),
                     entityAdmin.getEmail(),
-                    entityAdmin.getPassword(),
+                    null,
                     entityAdmin.getAddress(),
                     entityAdmin.getPostalCode()
 
@@ -38,17 +43,21 @@ public class AdminSignInService {
     }
 
     public void addAdmin(AdminDto admin){
+
+        if(adminSignInRepository.existsByEmail(admin.getEmail())){
+            throw new RuntimeException("Email already in there");
+
+        }
+
          adminSignInRepository.save(new AdminEntity(
                  admin.getId(),
                  admin.getName(),
                  admin.getDateOfBirth(),
                  admin.getEmail(),
-                 admin.getPassword(),
+                 null,
                  admin.getAddress(),
                  admin.getPostalCode()
          ));
-
-
 
     }
 
