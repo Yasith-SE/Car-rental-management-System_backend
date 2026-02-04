@@ -2,12 +2,14 @@ package edu.icet.service;
 
 import edu.icet.model.dto.CustomerDto;
 import edu.icet.model.entity.CustomerEntity;
+import edu.icet.model.entity.UsersEntity;
 import edu.icet.repository.CustomerEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerSignInServices {
@@ -15,10 +17,10 @@ public class CustomerSignInServices {
 
 
     @Autowired
-    CustomerEntityRepository customerEntityRepository;
+    private CustomerEntityRepository customerEntityRepository;
 
 
-    public List<CustomerDto> employeeDtos(){
+    public List<CustomerDto> getAllCustomers(){
         List<CustomerEntity> customerEntities = customerEntityRepository.findAll();
         List<CustomerDto> customerDto = new ArrayList<>();
 
@@ -28,7 +30,7 @@ public class CustomerSignInServices {
                     customerEntity.getName(),
                     customerEntity.getDateOfBirth(),
                     customerEntity.getEmail(),
-                    customerEntity.getPassword(),
+                    null,
                     customerEntity.getAddress(),
                     customerEntity.getPostalCode()
             ));
@@ -36,19 +38,28 @@ public class CustomerSignInServices {
         return  customerDto;
     }
 
-    public void addCustomer(CustomerEntity customerEntity){
+    public void addCustomer(CustomerDto customerDto){
+        if(customerEntityRepository.existByEmail(customerDto.getEmail())){
+
+
+        }
+
         customerEntityRepository.save(new CustomerEntity(
-                customerEntity.getId(),
-                customerEntity.getName(),
-                customerEntity.getDateOfBirth(),
-                customerEntity.getEmail(),
-                customerEntity.getPassword(),
-                customerEntity.getAddress(),
-                customerEntity.getPostalCode()
+                customerDto.getId(),
+
+                customerDto.getName(),
+                customerDto.getDateOfBirth(),
+                customerDto.getEmail(),
+                customerDto.getPassword(),
+                customerDto.getAddress(),
+                customerDto.getPostalCode()
         ));
 
+    }
+    public boolean authenticate(UsersEntity loginRequest) {
+        Optional<CustomerEntity> customer = customerEntityRepository.findbyEmail(loginRequest.getEmail());
 
-
+        return customer.isPresent() && customer.get().getPassword().equals(loginRequest.getPassword());
     }
 
 

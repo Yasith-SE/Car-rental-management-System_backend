@@ -33,7 +33,7 @@ public class AdminDto {
     @NotBlank(message = "Enter your living address")
     private String address;
 
-    @Min(value = 1000, message = "Enter your postal code ")
+    @Min(value = 4, message = "Enter your postal code ")
     private int postalCode;
 
 
