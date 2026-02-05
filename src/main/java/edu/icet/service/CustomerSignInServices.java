@@ -1,6 +1,7 @@
 package edu.icet.service;
 
 import edu.icet.model.dto.CustomerDto;
+import edu.icet.model.dto.Users;
 import edu.icet.model.entity.CustomerEntity;
 import edu.icet.model.entity.UsersEntity;
 import edu.icet.repository.CustomerEntityRepository;
@@ -37,7 +38,6 @@ public class CustomerSignInServices {
         }
         return  customerDto;
     }
-
     public void addCustomer(CustomerDto customerDto){
         if(customerEntityRepository.existByEmail(customerDto.getEmail())){
 
@@ -56,7 +56,7 @@ public class CustomerSignInServices {
         ));
 
     }
-    public boolean authenticate(UsersEntity loginRequest) {
+    public boolean authenticate(Users loginRequest) {
         Optional<CustomerEntity> customer = customerEntityRepository.findbyEmail(loginRequest.getEmail());
 
         return customer.isPresent() && customer.get().getPassword().equals(loginRequest.getPassword());

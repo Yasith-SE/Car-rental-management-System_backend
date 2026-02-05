@@ -1,6 +1,7 @@
 package edu.icet.service;
 
 import edu.icet.model.dto.AdminDto;
+import edu.icet.model.dto.Users;
 import edu.icet.model.entity.AdminEntity;
 import edu.icet.repository.AdminSignInRepository;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -58,6 +60,13 @@ public class AdminSignInService {
                  admin.getAddress(),
                  admin.getPostalCode()
          ));
+
+    }
+    public boolean authentication(Users users){
+        Optional<AdminEntity> adminEntity = adminSignInRepository.findbyEmail(users.getEmail());
+
+        return adminEntity.isPresent() && adminEntity.get().equals(users.getPassword());
+
 
     }
 
