@@ -2,7 +2,6 @@ package edu.icet.model.entity;
 
 
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Getter

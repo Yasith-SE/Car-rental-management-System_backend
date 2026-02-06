@@ -39,14 +39,13 @@ public class CustomerSignInServices {
         return  customerDto;
     }
     public void addCustomer(CustomerDto customerDto){
-        if(customerEntityRepository.existByEmail(customerDto.getEmail())){
-
+        if(customerEntityRepository.existsByEmail(customerDto.getEmail())){
+            throw new RuntimeException("Email Already Exist");
 
         }
 
         customerEntityRepository.save(new CustomerEntity(
-                customerDto.getId(),
-
+                null,
                 customerDto.getName(),
                 customerDto.getDateOfBirth(),
                 customerDto.getEmail(),
@@ -56,10 +55,10 @@ public class CustomerSignInServices {
         ));
 
     }
-    public boolean authenticate(Users loginRequest) {
-        Optional<CustomerEntity> customer = customerEntityRepository.findbyEmail(loginRequest.getEmail());
+    public boolean authenticate(Users customerUserLogin) {
+        Optional<CustomerEntity> customer = customerEntityRepository.findByEmail(customerUserLogin.getEmail());
 
-        return customer.isPresent() && customer.get().getPassword().equals(loginRequest.getPassword());
+        return customer.isPresent() && customer.get().getPassword().equals(customerUserLogin.getPassword());
     }
 
 

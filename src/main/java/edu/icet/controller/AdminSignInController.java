@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RequestMapping("/adminLogin")
 @RestController
-@CrossOrigin(origins = "http://localhost:3000") //request to react frontend
 public class AdminSignInController {
 
     @Autowired
@@ -33,10 +32,9 @@ public class AdminSignInController {
     @PostMapping("/addAdmin")
     public ResponseEntity<?> addAdmin(@Valid @RequestBody AdminDto adminDto){
 
-
-
         adminSignInService.addAdmin(adminDto);
         return ResponseEntity.ok(Map.of("message","Admin login success"));
+
     }
 
     @PostMapping("/admin-login")

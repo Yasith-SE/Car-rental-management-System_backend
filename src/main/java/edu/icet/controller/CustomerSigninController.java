@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@RequestMapping("/customer-login")
 @RestController
-@RequestMapping("/customer")
-@CrossOrigin(origins = "http://localhost:3000") // Required for React
 public class CustomerSigninController {
 
 
@@ -33,10 +32,9 @@ public class CustomerSigninController {
         boolean isValid = service.authenticate(loginRequest);
 
             if (isValid) {
+                return ResponseEntity.ok(Map.of("message", "Login successful"));
 
-            return ResponseEntity.ok(Map.of("message", "Login successful"));
-
-        }
+            }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid email or password"));
 

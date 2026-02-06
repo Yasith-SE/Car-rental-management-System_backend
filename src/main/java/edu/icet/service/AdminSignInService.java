@@ -52,20 +52,20 @@ public class AdminSignInService {
         }
 
          adminSignInRepository.save(new AdminEntity(
-                 admin.getId(),
+                 null,
                  admin.getName(),
                  admin.getDateOfBirth(),
                  admin.getEmail(),
-                 null,
+                 admin.getPassword(),
                  admin.getAddress(),
                  admin.getPostalCode()
          ));
 
     }
-    public boolean authentication(Users users){
-        Optional<AdminEntity> adminEntity = adminSignInRepository.findbyEmail(users.getEmail());
+    public boolean authentication(Users adminUserLogin){
+        Optional<AdminEntity> adminEntity = adminSignInRepository.findByEmail(adminUserLogin.getEmail());
 
-        return adminEntity.isPresent() && adminEntity.get().equals(users.getPassword());
+        return adminEntity.isPresent() && adminEntity.get().getPassword().equals(adminUserLogin.getPassword());
 
 
     }
