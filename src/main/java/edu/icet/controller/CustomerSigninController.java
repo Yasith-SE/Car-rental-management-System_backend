@@ -1,7 +1,7 @@
 package edu.icet.controller;
 
 import edu.icet.model.dto.CustomerDto;
-import edu.icet.model.dto.Users;
+import edu.icet.model.dto.CarListing;
 import edu.icet.service.CustomerSignInService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class CustomerSigninController {
     }
 
     @GetMapping("/available-cars")
-    public List<Users> getCars() {
+    public List<CarListing> getCars() {
         return service.getAllAvailableCars();
     }
 }

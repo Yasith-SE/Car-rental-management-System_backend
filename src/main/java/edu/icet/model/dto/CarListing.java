@@ -1,11 +1,20 @@
 package edu.icet.model.dto;
-import lombok.Data;
+
+import lombok.*;
 
 @Data
-public class Users {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+
+public class CarListing {
+
     private Long id;
     private String name;
     private String year;
     private Double price;
     private String image;
+
 }

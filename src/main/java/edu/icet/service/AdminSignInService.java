@@ -5,6 +5,6 @@ import edu.icet.model.dto.AdminDto;
 public interface AdminSignInService {
 
     void addAdmin(AdminDto adminDto);
-    boolean login(String email, String password);
+
 
 }

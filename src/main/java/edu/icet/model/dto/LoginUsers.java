@@ -1,7 +1,6 @@
 package edu.icet.model.dto;
 
 import lombok.*;
-import java.time.LocalDate;
 
 @Data
 @Getter
@@ -10,13 +9,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString
 
-public class CustomerDto {
+public class LoginUsers {
 
-    private String name;
-    private LocalDate dateOfBirth;
     private String email;
     private String password;
-    private String address;
-    private Integer postalCode;
+    private String role;
+
 
 }
