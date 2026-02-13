@@ -1,22 +1,11 @@
 package edu.icet.model.dto;
+import lombok.Data;
 
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-
+@Data
 public class Users {
-
-    @Email(message = "Enter your correct email")
-    private String email;
-
-
-    @NotBlank(message = "enter is required")
-    private String password;
+    private Long id;
+    private String name;
+    private String year;
+    private Double price;
+    private String image;
 }
