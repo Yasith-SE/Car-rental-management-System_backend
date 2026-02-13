@@ -3,6 +3,7 @@ package edu.icet.service.Impl;
 
 import edu.icet.model.dto.CustomerDto;
 import edu.icet.repository.CustomerSignInRepository;
+import edu.icet.repository.impl.CustomerSignInRepositoryImpl;
 import edu.icet.service.CustomerSignInService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,10 +12,9 @@ import java.sql.SQLException;
 
 
 @Service
-@RequiredArgsConstructor
 public class CustomerSignInServicesImpl implements CustomerSignInService {
 
-    private final CustomerSignInRepository customerSignInRepository;
+    CustomerSignInRepository customerSignInRepository = new CustomerSignInRepositoryImpl();
 
     @Override
     public void registerCustomer(CustomerDto customerDto) {

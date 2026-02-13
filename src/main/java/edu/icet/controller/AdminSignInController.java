@@ -2,22 +2,23 @@ package edu.icet.controller;
 
 import edu.icet.model.dto.AdminDto;
 import edu.icet.service.AdminSignInService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/adminLogin")
+@RequestMapping("/adminSignUp")
 @CrossOrigin(origins = "")
+@RequiredArgsConstructor
 public class AdminSignInController {
-    @Autowired
-    private AdminSignInService service;
+
+    private final AdminSignInService service;
 
     @PostMapping("/addAdmin")
-    public ResponseEntity<?> addAdmin(@RequestBody AdminDto adminDto) {
+    public Map<String,String> addAdmin(@RequestBody AdminDto adminDto) {
+
         service.addAdmin(adminDto);
-        return ResponseEntity.ok(Map.of("message", "Admin Registered"));
+        return Map.of("status", "success", "message", "Admin registered successfully!");
     }
 }

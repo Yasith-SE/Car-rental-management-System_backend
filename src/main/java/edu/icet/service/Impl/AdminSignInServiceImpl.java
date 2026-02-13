@@ -2,6 +2,7 @@ package edu.icet.service.Impl;
 
 import edu.icet.model.dto.AdminDto;
 import edu.icet.repository.AdminSignInRepository;
+import edu.icet.repository.impl.AdminSignInRepositoryImpl;
 import edu.icet.service.AdminSignInService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,10 +10,9 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 
 @Service
-@RequiredArgsConstructor
 public class AdminSignInServiceImpl implements AdminSignInService {
 
-    private final AdminSignInRepository adminSignInRepository;
+    AdminSignInRepository adminSignInRepository = new AdminSignInRepositoryImpl();
 
     @Override
     public void addAdmin(AdminDto adminDto) {
