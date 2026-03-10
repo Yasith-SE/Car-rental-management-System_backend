@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/customerSignUp")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173/")
 @RequiredArgsConstructor
 public class CustomerSigninController {
 
