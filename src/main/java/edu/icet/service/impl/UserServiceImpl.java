@@ -61,6 +61,8 @@ public class UserServiceImpl implements UserService {
         dto.setAddress(user.getAddress());
         dto.setPostalCode(user.getPostalCode());
         dto.setRole(user.getRole());
+
+        dto.setImage(user.getImage());
         return dto;
     }
 
@@ -77,5 +79,19 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return mapToDto(user);
+    }
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDto updateUserRole(Long id, String newRole) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRole(newRole);
+        User updatedUser = userRepository.save(user);
+        return mapToDto(updatedUser);
     }
 }

@@ -12,5 +12,10 @@ public interface UserService {
     UserDto loginUser(LoginDto loginDto);
 
     List<UserDto> getAllUsers();
+
     UserDto getUserById(Long id);
+
+    void deleteUser(Long id);
+
+    UserDto updateUserRole(Long id, String newRole);
 }

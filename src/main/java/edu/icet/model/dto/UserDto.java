@@ -1,6 +1,7 @@
 package edu.icet.model.dto;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -18,4 +19,6 @@ public class UserDto {
     private String address;
     private String postalCode;
     private String role;
+    private String image;
+    private MultipartFile imageFile;
 }

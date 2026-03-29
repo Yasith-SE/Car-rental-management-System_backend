@@ -30,4 +30,6 @@ public class User {
     private String postalCode; // String is safer for postal codes than Integer
 
     private String role; // e.g., "CUSTOMER" or "ADMIN"
+
+    private String image;
 }
