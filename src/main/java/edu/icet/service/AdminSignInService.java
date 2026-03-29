@@ -1,7 +1,10 @@
 package edu.icet.service;
 
-public class AdminSignInService {
+import edu.icet.model.dto.AdminDto;
 
+public interface AdminSignInService {
+
+    void addAdmin(AdminDto adminDto);
 
 
 }

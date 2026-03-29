@@ -1,12 +1,10 @@
 package edu.icet.repository;
 
-import edu.icet.model.entity.AdminEntity;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.data.jpa.repository.JpaRepository;
+import edu.icet.model.dto.AdminDto;
+import java.sql.SQLException;
 
-public interface AdminSignInRepository extends JpaRepository<AdminEntity, String> {
+public interface AdminSignInRepository {
 
-
-
+    boolean save(AdminDto admin) throws SQLException, ClassNotFoundException;
 
 }

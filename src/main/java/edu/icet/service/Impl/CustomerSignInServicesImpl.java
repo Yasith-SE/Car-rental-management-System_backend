@@ -1,0 +1,29 @@
+package edu.icet.service.Impl;
+
+
+import edu.icet.model.dto.CustomerDto;
+import edu.icet.repository.CustomerSignInRepository;
+import edu.icet.repository.impl.CustomerSignInRepositoryImpl;
+import edu.icet.service.CustomerSignInService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.sql.SQLException;
+
+
+@Service
+public class CustomerSignInServicesImpl implements CustomerSignInService {
+
+    CustomerSignInRepository customerSignInRepository = new CustomerSignInRepositoryImpl();
+
+    @Override
+    public void registerCustomer(CustomerDto customerDto) {
+        try {
+            customerSignInRepository.save(customerDto);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Invalid Runtime error"+e.getMessage());
+        }
+    }
+}

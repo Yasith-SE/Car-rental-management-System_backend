@@ -1,22 +1,24 @@
 package edu.icet.model.dto;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 
-@Data
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 
-public class AdminDto {
-
+public class UserDto {
+    private Long id;
     private String name;
     private LocalDate dateOfBirth;
     private String email;
-    private String password;
     private String address;
-    private Integer postalCode;
-
+    private String postalCode;
+    private String role;
+    private String image;
+    private MultipartFile imageFile;
 }
