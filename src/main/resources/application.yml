@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8091
 
 spring:
   datasource:
@@ -16,3 +16,18 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+
+  # ADDED THIS TO FIX THE LARGE 3D MODEL UPLOADS
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8091}
+  jwt:
+    secret: ${JWT_SECRET:ceylon-autocar-spring-jwt-secret-2026-change-me-now}
+    expiration-ms: ${JWT_EXPIRATION_MS:43200000}
