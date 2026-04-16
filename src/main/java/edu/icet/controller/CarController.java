@@ -1,55 +1,67 @@
 package edu.icet.controller;
 
 import edu.icet.model.dto.Car;
+import edu.icet.model.entity.User;
 import edu.icet.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/api/cars")
 @RequiredArgsConstructor
 public class CarController {
 
     private final CarService carService;
 
-    @PostMapping("/uploadcars")
-    public ResponseEntity<Car> addCar(@ModelAttribute Car carDto) throws IOException {
-
-        // 1. Handle the Image File
-        if (carDto.getImageFile() != null && !carDto.getImageFile().isEmpty()) {
-            String uploadDir = "src/main/resources/static/uploads/";
-            File directory = new File(uploadDir);
-            if (!directory.exists()) directory.mkdirs();
-
-            String fileName = System.currentTimeMillis() + "_" + carDto.getImageFile().getOriginalFilename();
-            Path filePath = Paths.get(uploadDir + fileName);
-            Files.copy(carDto.getImageFile().getInputStream(), filePath);
-
-            // Set the URL that React will use to show the image
-            carDto.setImage("http://localhost:8080/uploads/" + fileName);
+    @PostMapping
+    public ResponseEntity<?> addCar(@ModelAttribute Car carDto, Authentication authentication) {
+        try {
+            User actor = currentUser(authentication);
+            Car savedCar = carService.addCar(carDto, actor);
+            return new ResponseEntity<>(savedCar, HttpStatus.CREATED);
+        } catch (RuntimeException exception) {
+            return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
         }
-
-        Car savedCar = carService.addCar(carDto);
-        return new ResponseEntity<>(savedCar, HttpStatus.CREATED);
     }
 
-    @GetMapping("/availablecars")
+    @GetMapping
     public ResponseEntity<List<Car>> getAllCars() {
         return ResponseEntity.ok(carService.getAllCars());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCarById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(carService.getCarById(id));
+        } catch (RuntimeException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", exception.getMessage()));
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCar(@PathVariable Long id) {
-        carService.deleteCar(id);
-        return ResponseEntity.ok("Car deleted successfully");
+    public ResponseEntity<?> deleteCar(@PathVariable Long id) {
+        try {
+            carService.deleteCar(id);
+            return ResponseEntity.ok(Map.of("message", "Car deleted successfully."));
+        } catch (RuntimeException exception) {
+            return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
+        }
+    }
+
+    private User currentUser(Authentication authentication) {
+        return authentication != null && authentication.getPrincipal() instanceof User user ? user : null;
     }
 }
