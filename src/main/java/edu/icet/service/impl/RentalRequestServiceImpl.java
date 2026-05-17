@@ -1,20 +1,34 @@
 package edu.icet.service.impl;
 
 import edu.icet.model.dto.RentalRequestDto;
+import edu.icet.model.entity.NotificationEntity;
 import edu.icet.model.entity.RentalRequestEntity;
 import edu.icet.model.entity.User;
+import edu.icet.repository.NotificationRepository;
 import edu.icet.repository.RentalRequestRepository;
 import edu.icet.service.RentalRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class RentalRequestServiceImpl implements RentalRequestService {
 
+    private static final Set<String> ALLOWED_STATUSES = Set.of(
+            "PENDING",
+            "CONFIRMED",
+            "ACTIVE",
+            "COMPLETED",
+            "CANCELLED"
+    );
+
     private final RentalRequestRepository rentalRequestRepository;
+    private final NotificationRepository notificationRepository;
 
     @Override
     public RentalRequestDto createRentalRequest(RentalRequestDto rentalRequestDto, User requester) {
@@ -58,6 +72,30 @@ public class RentalRequestServiceImpl implements RentalRequestService {
         return mapToDto(rentalRequestRepository.save(entity));
     }
 
+    @Override
+    public List<RentalRequestDto> getAllRentalRequests() {
+        return rentalRequestRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+
+    @Override
+    public RentalRequestDto updateRentalStatus(Long id, String status, User actor) {
+        if (actor == null || !"ADMIN".equalsIgnoreCase(actor.getRole())) {
+            throw new RuntimeException("Only admin accounts can update rental requests.");
+        }
+
+        String normalizedStatus = normalizeStatus(status);
+        RentalRequestEntity entity = rentalRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rental request not found."));
+
+        entity.setStatus(normalizedStatus);
+        RentalRequestEntity savedEntity = rentalRequestRepository.save(entity);
+        createCustomerStatusNotification(savedEntity, normalizedStatus);
+        return mapToDto(savedEntity);
+    }
+
     private RentalRequestDto mapToDto(RentalRequestEntity entity) {
         RentalRequestDto dto = new RentalRequestDto();
         dto.setId(entity.getId());
@@ -89,5 +127,52 @@ public class RentalRequestServiceImpl implements RentalRequestService {
         dto.setStatus(entity.getStatus());
         dto.setCreatedAt(entity.getCreatedAt());
         return dto;
+    }
+
+    private String normalizeStatus(String status) {
+        String normalizedStatus = String.valueOf(status == null ? "" : status)
+                .trim()
+                .toUpperCase(Locale.ROOT);
+
+        if (!ALLOWED_STATUSES.contains(normalizedStatus)) {
+            throw new RuntimeException("Unsupported rental status.");
+        }
+
+        return normalizedStatus;
+    }
+
+    private void createCustomerStatusNotification(RentalRequestEntity rentalRequest, String status) {
+        if (rentalRequest.getUserId() == null) {
+            return;
+        }
+
+        NotificationEntity notification = new NotificationEntity();
+        notification.setUserId(rentalRequest.getUserId());
+        notification.setRentalRequestId(rentalRequest.getId());
+        notification.setType("success");
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setRead(false);
+
+        String carName = trim(rentalRequest.getCarName()).isEmpty()
+                ? "your selected vehicle"
+                : rentalRequest.getCarName();
+
+        if ("CONFIRMED".equals(status)) {
+            notification.setTitle("Rental request approved");
+            notification.setMessage("Your request for " + carName + " has been approved by the showroom manager.");
+            notificationRepository.save(notification);
+            return;
+        }
+
+        if ("CANCELLED".equals(status)) {
+            notification.setType("warning");
+            notification.setTitle("Your request is cancelled");
+            notification.setMessage("Your request for " + carName + " was cancelled by the showroom manager.");
+            notificationRepository.save(notification);
+        }
+    }
+
+    private String trim(String value) {
+        return value == null ? "" : value.trim();
     }
 }

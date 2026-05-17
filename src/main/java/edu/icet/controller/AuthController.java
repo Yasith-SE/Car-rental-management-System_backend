@@ -51,6 +51,8 @@ public class AuthController {
                     "message", message,
                     "user", createdUser
             ));
+        } catch (SecurityException exception) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", exception.getMessage()));
         } catch (RuntimeException exception) {
             return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
         }

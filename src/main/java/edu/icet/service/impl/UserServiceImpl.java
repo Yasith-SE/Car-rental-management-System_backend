@@ -33,6 +33,9 @@ public class UserServiceImpl implements UserService {
     private static final String STATUS_PENDING = "PENDING_APPROVAL";
     private static final String STATUS_REJECTED = "REJECTED";
     private static final String STATUS_SUSPENDED = "SUSPENDED";
+    private static final String SUPER_ADMIN_EMAIL = "admin@ceylonautocar.lk";
+    private static final String SUPER_ADMIN_SOURCE = "DATABASE_BOOTSTRAP";
+    private static final String SUPER_ADMIN_TITLE = "Super Admin";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -52,7 +55,13 @@ public class UserServiceImpl implements UserService {
         validateUserInput(userDto);
 
         boolean createdByAdmin = isAdmin(creator);
+        boolean createdBySuperAdmin = isSuperAdmin(creator);
         String role = normalizeRole(userDto.getRole());
+
+        if (ROLE_ADMIN.equals(role) && !createdBySuperAdmin) {
+            throw new SecurityException("Only the super admin can create admin or employee accounts.");
+        }
+
         String accessStatus = role.equals(ROLE_ADMIN) || createdByAdmin
                 ? STATUS_APPROVED
                 : STATUS_PENDING;
@@ -165,8 +174,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUserRole(Long id, String newRole, User actor) {
+        if (!isSuperAdmin(actor)) {
+            throw new SecurityException("Only the super admin can change user roles.");
+        }
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found."));
+
+        if (isSuperAdmin(user)) {
+            throw new RuntimeException("The super admin account role cannot be changed.");
+        }
 
         String normalizedRole = normalizeRole(newRole);
         user.setRole(normalizedRole);
@@ -299,6 +316,16 @@ public class UserServiceImpl implements UserService {
 
     private boolean isAdmin(User user) {
         return user != null && ROLE_ADMIN.equalsIgnoreCase(user.getRole());
+    }
+
+    private boolean isSuperAdmin(User user) {
+        if (!isAdmin(user)) {
+            return false;
+        }
+
+        return SUPER_ADMIN_EMAIL.equalsIgnoreCase(trim(user.getEmail()))
+                || SUPER_ADMIN_SOURCE.equalsIgnoreCase(trim(user.getAccountSource()))
+                || SUPER_ADMIN_TITLE.equalsIgnoreCase(trim(user.getTitle()));
     }
 
     private String normalizeEmail(String email) {

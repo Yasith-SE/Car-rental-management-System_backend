@@ -1,12 +1,14 @@
 package edu.icet.controller;
 
 import edu.icet.model.dto.AccessStatusUpdateDto;
+import edu.icet.model.dto.RentalRequestDto;
 import edu.icet.model.dto.UserDto;
 import edu.icet.model.entity.LoginAudit;
 import edu.icet.model.entity.User;
 import edu.icet.repository.LoginAuditRepository;
 import edu.icet.repository.RentalRequestRepository;
 import edu.icet.repository.UserRepository;
+import edu.icet.service.RentalRequestService;
 import edu.icet.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -36,6 +38,7 @@ public class AdminController {
     private final LoginAuditRepository loginAuditRepository;
     private final RentalRequestRepository rentalRequestRepository;
     private final UserRepository userRepository;
+    private final RentalRequestService rentalRequestService;
     private final UserService userService;
 
     @GetMapping("/login-history")
@@ -54,6 +57,39 @@ public class AdminController {
         return ResponseEntity.ok(stats);
     }
 
+    @GetMapping("/rentals")
+    public ResponseEntity<List<RentalRequestDto>> getRentalRequests() {
+        return ResponseEntity.ok(rentalRequestService.getAllRentalRequests());
+    }
+
+    @PutMapping("/rentals/{id}/status")
+    public ResponseEntity<?> updateRentalStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload,
+            Authentication authentication
+    ) {
+        try {
+            RentalRequestDto updatedRental = rentalRequestService.updateRentalStatus(
+                    id,
+                    payload.get("status"),
+                    currentUser(authentication)
+            );
+            String nextStatus = updatedRental.getStatus();
+            String message = "CANCELLED".equalsIgnoreCase(nextStatus)
+                    ? "Rental request cancelled successfully."
+                    : "CONFIRMED".equalsIgnoreCase(nextStatus)
+                    ? "Rental request approved successfully."
+                    : "Rental request updated successfully.";
+
+            return ResponseEntity.ok(Map.of(
+                    "message", message,
+                    "rental", updatedRental
+            ));
+        } catch (RuntimeException exception) {
+            return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
+        }
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -69,6 +105,8 @@ public class AdminController {
                     "message", "User created successfully.",
                     "user", createdUser
             ));
+        } catch (SecurityException exception) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", exception.getMessage()));
         } catch (RuntimeException exception) {
             return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
         }
@@ -83,6 +121,8 @@ public class AdminController {
         try {
             UserDto updatedUser = userService.updateUserRole(id, role, currentUser(authentication));
             return ResponseEntity.ok(updatedUser);
+        } catch (SecurityException exception) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", exception.getMessage()));
         } catch (RuntimeException exception) {
             return ResponseEntity.badRequest().body(Map.of("message", exception.getMessage()));
         }

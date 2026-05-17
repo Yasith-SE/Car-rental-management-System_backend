@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -27,7 +27,7 @@ spring:
       max-request-size: 50MB
 
 app:
-  base-url: ${APP_BASE_URL:http://localhost:8091}
+  base-url: ${APP_BASE_URL:http://localhost:8081}
   jwt:
     secret: ${JWT_SECRET:ceylon-autocar-spring-jwt-secret-2026-change-me-now}
     expiration-ms: ${JWT_EXPIRATION_MS:43200000}

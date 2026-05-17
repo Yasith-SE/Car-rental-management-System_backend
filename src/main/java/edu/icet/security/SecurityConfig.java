@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/cars/**").hasRole("ADMIN")
                         .requestMatchers("/api/auth/me", "/api/auth/profile/**", "/api/auth/profile-image").authenticated()
                         .requestMatchers("/api/rentals/**").authenticated()
+                        .requestMatchers("/api/notifications/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

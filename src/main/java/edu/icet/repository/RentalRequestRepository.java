@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface RentalRequestRepository extends JpaRepository<RentalRequestEntity, Long> {
     long countByStatusIn(Collection<String> statuses);
+
+    List<RentalRequestEntity> findAllByOrderByCreatedAtDesc();
 }
